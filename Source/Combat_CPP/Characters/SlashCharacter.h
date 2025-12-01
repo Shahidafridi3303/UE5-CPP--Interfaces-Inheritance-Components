@@ -4,13 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "CharacterTypes.h"
+#include "Combat_CPP/Characters/BaseCharacter.h"
 #include "GameFramework/Character.h"
 #include "SlashCharacter.generated.h"
 
 UCLASS()
-class COMBAT_CPP_API ASlashCharacter : public ACharacter
+class COMBAT_CPP_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
+
+private:
+	// Components
+	UPROPERTY(VisibleAnywhere);
+	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere);
+	class UCameraComponent* FollowCamera;
+
+	//UPROPERTY(VisibleAnywhere);
+	//class UGroomComponent* Hair;
+
+	//UPROPERTY(VisibleAnywhere);
+	//class UGroomComponent* Eyebrows;
+
 
 public:
 	// Sets default values for this character's properties
@@ -26,9 +42,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UAttributeComponent* Attributes;
 
 private:
 
