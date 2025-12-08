@@ -45,10 +45,10 @@ ASlashCharacter::ASlashCharacter()
 // Called when the game starts or when spawned
 void ASlashCharacter::BeginPlay()
 {
-	//Super::BeginPlay();
+	Super::BeginPlay();
 	
-	//EquippedWeapon->AttachToComponent(GetMesh(), 
-		//FAttachmentTransformRules::SnapToTargetIncludingScale, FName("RightHandSocket"));
+	EquippedWeapon->AttachToComponent(GetMesh(), 
+		FAttachmentTransformRules::SnapToTargetIncludingScale, FName("RightHandSocket"));
 }
 
 void ASlashCharacter::MoveForward(float Value)
@@ -114,7 +114,8 @@ void ASlashCharacter::Tick(float DeltaTime)
 void ASlashCharacter::PlayerAttack()
 {
 	if (ActionState != EActionState::EAS_Unoccupied) return;
-	Super::Attack();
+	ActionState = EActionState::EAS_Attacking;
+	PlayAttackMontage();
 }
 
 // Called to bind functionality to input

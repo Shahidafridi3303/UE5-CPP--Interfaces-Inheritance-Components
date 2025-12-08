@@ -75,7 +75,7 @@ void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
 
 int ABaseCharacter::PlayAttackMontage()
 {
-	PlayAnimMontage(AttackMontage);
+	PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 	return 0;
 }
 
@@ -91,7 +91,6 @@ void ABaseCharacter::StopAttackMontage()
 void ABaseCharacter::PlayDodgeMontage()
 {
 	PlayAnimMontage(DodgeMontage);
-	//PlayMontageSection(DodgeMontage,);
 }
 
 void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
@@ -100,6 +99,17 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 
 void ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
 {
+	if (SectionNames.Num() > 0)
+	{
+		const int RandomSelection = FMath::RandRange(0, SectionNames.Num() - 1);
+
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && Montage)
+		{
+			AnimInstance->Montage_Play(Montage);
+			AnimInstance->Montage_JumpToSection(SectionNames[RandomSelection], Montage);
+		}
+	}
 }
 
 // Called every frame
