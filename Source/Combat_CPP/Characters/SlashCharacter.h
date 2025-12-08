@@ -21,11 +21,19 @@ private:
 	UPROPERTY(VisibleAnywhere);
 	class UCameraComponent* FollowCamera;
 
-	//UPROPERTY(VisibleAnywhere);
-	//class UGroomComponent* Hair;
+	UPROPERTY(VisibleAnywhere);
+	class UGroomComponent* Hair;
 
-	//UPROPERTY(VisibleAnywhere);
-	//class UGroomComponent* Eyebrows;
+	UPROPERTY(VisibleAnywhere);
+	UGroomComponent* Eyebrows;
+
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void Turn(float Value);
+	void LookUp(float Value);
+	void Dodge();
+
+	virtual void Jump() override;
 
 
 public:
@@ -35,6 +43,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void PlayerAttack();
 
 public:	
 	// Called every frame

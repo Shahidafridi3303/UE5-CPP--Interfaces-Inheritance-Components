@@ -20,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter);
-	virtual void Attack();
+	void Attack();
 
 	void Die();
 
@@ -44,7 +44,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UAttributeComponent* Attributes;
 
+protected:
+	class AWeapon* EquippedWeapon;
+
 private:
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
+	TSubclassOf<AWeapon> SpawnWeapon;
+
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 

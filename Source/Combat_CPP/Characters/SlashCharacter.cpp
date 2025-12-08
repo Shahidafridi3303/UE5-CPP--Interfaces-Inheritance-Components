@@ -3,10 +3,11 @@
 
 #include "SlashCharacter.h"
 #include "CharacterTypes.h"
-#include "Combat_CPP/Components/AttributeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GroomComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Combat_CPP/Item/Weapon.h"
 
 // Sets default values
 ASlashCharacter::ASlashCharacter()
@@ -32,20 +33,75 @@ ASlashCharacter::ASlashCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
 	FollowCamera->SetupAttachment(CameraBoom);
 
-	//Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
-	//Hair->SetupAttachment(GetMesh());
-	//Hair->Attachmentname = FName("head");
+	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	Hair->SetupAttachment(GetMesh());
+	Hair->AttachmentName = FString("head");
 
-	//Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));]
-	//Eyebrows->SetupAttachment(GetMesh());
-	//Eyebrows->Attachmentname = FName("head");
+	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
+	Eyebrows->SetupAttachment(GetMesh());
+	Eyebrows->AttachmentName = FString("head");
 }
 
 // Called when the game starts or when spawned
 void ASlashCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+	//Super::BeginPlay();
 	
+	//EquippedWeapon->AttachToComponent(GetMesh(), 
+		//FAttachmentTransformRules::SnapToTargetIncludingScale, FName("RightHandSocket"));
+}
+
+void ASlashCharacter::MoveForward(float Value)
+{
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+
+	if (Controller != nullptr && Value != 0.0f)
+	{
+		const FRotator ControlRotation = GetControlRotation();
+		const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void ASlashCharacter::MoveRight(float Value)
+{
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+
+	if (Controller != nullptr && Value != 0.0f)
+	{
+		const FRotator ControlRotation = GetControlRotation();
+		const FRotator YawRotation(0.0f, ControlRotation.Yaw, 0.0f);
+
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void ASlashCharacter::Turn(float Value)
+{
+	AddControllerYawInput(Value);
+}
+
+void ASlashCharacter::LookUp(float Value)
+{
+	AddControllerPitchInput(Value);
+}
+
+void ASlashCharacter::Jump()
+{
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+	Super::Jump();
+}
+
+void ASlashCharacter::Dodge()
+{
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+	PlayDodgeMontage();
+	ActionState = EActionState::EAS_Dodge;
 }
 
 // Called every frame
@@ -55,10 +111,25 @@ void ASlashCharacter::Tick(float DeltaTime)
 
 }
 
+void ASlashCharacter::PlayerAttack()
+{
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+	Super::Attack();
+}
+
 // Called to bind functionality to input
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &ASlashCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ASlashCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("Turn", this, &ASlashCharacter::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASlashCharacter::LookUp);
+
+	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ASlashCharacter::Jump);
+	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &ASlashCharacter::PlayerAttack);
+	PlayerInputComponent->BindAction(FName("Dodge"), IE_Pressed, this, &ASlashCharacter::Dodge);
 
 }
 
